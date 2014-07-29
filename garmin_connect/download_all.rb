@@ -77,15 +77,14 @@ xml.xpath("//tr[starts-with(@id, 'activitiesForm:activitiesGrid:n:')]").each do 
   type = activity.css('td:eq(4)').text
   date_str = activity.css('td:eq(6)').text
   date = DateTime.parse(date_str)
-  filename = "#{date.strftime('%Y%m%d-%H%M')}_#{type}_garmin.gpx"
-  puts filename
-  
-  if date <= from_date
-    $stderr.puts "#{date} is before #{from_date}, breaking"
-    break
+  extension = "tcx"
+  filename = "#{date.strftime('%Y%m%d-%H%M')}_#{type}_garmin.#{extension}"
+  if File.exist?(filename) 
+      $stderr.puts "#{filename} already exists"
+      next
   end
 
-  url = "http://connect.garmin.com/proxy/activity-service-1.2/gpx/activity/#{id}?full=true"
+  url = "http://connect.garmin.com/proxy/activity-service-1.2/#{extension}/activity/#{id}?full=true"
   $stderr.puts "downloading #{url} to #{filename}"
   agent.get(url).save(filename)
 end                                    
